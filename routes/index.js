@@ -21,9 +21,9 @@ var coffee_query = "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As 
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+//router.get('/', function(req, res, next) {
+//  res.render('index', { title: 'Express' });
+//});
 
 module.exports = router;
 
@@ -42,7 +42,7 @@ module.exports = router;
 //});
 
 /* GET the map page */
-router.get('/map', function(req, res) {
+router.get('/', function(req, res) {
     var selected = [];
     //var client = new pg.Client(conString); // Setup our Postgres Client
     client.connect(); // connect to the client
