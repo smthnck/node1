@@ -3,8 +3,12 @@ var router = express.Router();
 
 
 /* PostgreSQL and PostGIS module and connection setup */
-var pg = require("pg"); // require Postgres module
-
+//var pg = require("pg"); // require Postgres module
+const { Client } = require('pg');
+const client = new Client ({
+	connectionString:process.env.DATABASE_URL,
+	ssl:true,
+});
 // Setup connection
 var username = "postgres" // sandbox username
 var password = "" // read only privileges on our table
@@ -25,7 +29,7 @@ module.exports = router;
 
 /* GET Postgres JSON data */
 router.get('/data', function (req, res) {
-    var client = new pg.Client(conString);
+    //var client = new pg.Client(conString);
     client.connect();
     var query = client.query(coffee_query);
     query.on("row", function (row, result) {
@@ -40,7 +44,7 @@ router.get('/data', function (req, res) {
 /* GET the map page */
 router.get('/map', function(req, res) {
     var selected = [];
-	var client = new pg.Client(conString); // Setup our Postgres Client
+    //var client = new pg.Client(conString); // Setup our Postgres Client
     client.connect(); // connect to the client
     var query = client.query(coffee_query); // Run our Query
     query.on("row", function (row, result) {
@@ -70,7 +74,7 @@ router.get('/:filter/:loc', function (req, res) {
         console.log("Request passed")
         if (loc==='1'){  
 			var filter_query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(l.geom)::json As geometry, row_to_json((l.subzone,l.cnt,l.quartile,l.filt)) As properties FROM (SELECT rt.geom,rt.subzone,case when lg.cnt <1 then 0 else lg.cnt end as cnt,case when lg.quartile <.25 then 1 when lg.quartile between .25 and .49 then 2 when lg.quartile between .5 and .74 then 3 when lg.quartile > .75 then 4 else 0 end as quartile,case when rt.subzone in (" + name + ") then 1 else 0 end as filt FROM (SELECT a.subzone09,count(*) as cnt,a.geom,percent_rank() over (order by count(*)) as quartile,case when a.subzone09 in (" + name + ") then 1 else 0 end as filt FROM subzones_chi2 As a join (select * from cta_od_zones where origin in (" + name + ")) as dt on a.subzone09=dt.destination group by a.subzone09,a.geom,case when a.subzone09 in (" + name + ") then 1 else 0 end) as lg right join (select geom,subzone09 as subzone from subzones_chi2) as rt on subzone09=rt.subzone order by lg.cnt) as l)As f)As fc";
-			var client = new pg.Client(conString);
+			//var client = new pg.Client(conString);
 			client.connect();
 			var query = client.query(filter_query);
 			query.on("row", function (row, result) {
@@ -88,7 +92,7 @@ router.get('/:filter/:loc', function (req, res) {
 		}else {
 			var filter_query = "SELECT row_to_json(fc) FROM (SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(l.geom)::json As geometry, row_to_json((l.subzone,l.cnt,l.quartile,l.filt)) As properties FROM (SELECT rt.geom,rt.subzone,case when lg.cnt <1 then 0 else lg.cnt end as cnt,case when lg.quartile <.25 then 1 when lg.quartile between .25 and .49 then 2 when lg.quartile between .5 and .74 then 3 when lg.quartile > .75 then 4 else 0 end as quartile,case when rt.subzone in (" + name + ") then 1 else 0 end as filt FROM (SELECT a.subzone09,count(*) as cnt,a.geom,percent_rank() over (order by count(*)) as quartile,case when a.subzone09 in (" + name + ") then 1 else 0 end as filt FROM subzones_chi2 As a join (select * from cta_od_zones where destination in (" + name + ")) as dt on a.subzone09=dt.origin group by a.subzone09,a.geom,case when a.subzone09 in (" + name + ") then 1 else 0 end) as lg right join (select geom,subzone09 as subzone from subzones_chi2) as rt on subzone09=rt.subzone order by lg.cnt) as l)As f)As fc";
 			
-			var client = new pg.Client(conString);
+			//var client = new pg.Client(conString);
 			client.connect();
 			var query = client.query(filter_query);
 			query.on("row", function (row, result) {
