@@ -28,18 +28,18 @@ router.get('/', function(req, res, next) {
 module.exports = router;
 
 /* GET Postgres JSON data */
-router.get('/data', function (req, res) {
+//router.get('/data', function (req, res) {
     //var client = new pg.Client(conString);
-    client.connect();
-    var query = client.query(coffee_query);
-    query.on("row", function (row, result) {
-        result.addRow(row);
-    });
-    query.on("end", function (result) {
-        res.send(result.rows[0].row_to_json);
-        res.end();
-    });
-});
+//    client.connect();
+//    var query = client.query(coffee_query);
+//    query.on("row", function (row, result) {
+//        result.addRow(row);
+//    });
+//    query.on("end", function (result) {
+//        res.send(result.rows[0].row_to_json);
+//        res.end();
+//    });
+//});
 
 /* GET the map page */
 router.get('/map', function(req, res) {
